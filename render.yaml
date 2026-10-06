@@ -1,0 +1,23 @@
+# Paid production configuration: review Render's price before deploying.
+# SQLite requires a persistent disk to retain customer requests.
+services:
+  - type: web
+    name: fajwadev
+    runtime: python
+    plan: starter
+    buildCommand: python -m zipfile -e fajwadev_Render_Ready.zip . && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
+    healthCheckPath: /healthz
+    disk:
+      name: fajwa-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: FAJWA_DB_PATH
+        value: /var/data/fajwa.db
