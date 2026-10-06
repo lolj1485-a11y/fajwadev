@@ -2,26 +2,25 @@
 
 ## النشر على Render
 
-ملف `render.yaml` يجهّز خدمة Python بخادم Gunicorn وقرص دائم 1 GB
-لحفظ طلبات العملاء. هذا الإعداد يستخدم خطة Starter المدفوعة؛ راجع سعر
-الخدمة والقرص في Render ووافق على التكلفة قبل إنشاء الخدمة.
-الخدمة المجانية دون قاعدة بيانات خارجية دائمة تفقد طلبات SQLite عند إعادة التشغيل أو النشر.
+ملف `render.yaml` يجهّز خدمة Python بخادم Gunicorn على خطة Free المجانية
+حسب اختيار المالك، دون قرص مدفوع. طلبات SQLite مؤقتة وقد تُفقد عند
+إعادة التشغيل أو النشر. قد تتوقف الخدمة عند عدم الاستخدام.
+تم رفع حزمة المصدر إلى https://github.com/lolj1485-a11y/fajwadev.
 
 1. أنشئ حساب GitHub وارفع ملفات المشروع إلى مستودع، دون `.env` أو `instance/` أو `.venv/`.
 2. سجّل الدخول إلى Render، ثم اختر **New → Blueprint** واربط المستودع الذي يحتوي على `render.yaml`.
-3. راجع الموارد والتكلفة، ثم أنشئ الخدمة بعد الموافقة. سيظهر رابط `https://….onrender.com` بعد نجاح البناء.
-4. يتولد `SECRET_KEY` تلقائياً، وتكون `COOKIE_SECURE=1` و`FAJWA_DB_PATH=/var/data/fajwa.db` مضبوطتين في الملف.
+3. اختر Free بسعر 0 دولار، دون إضافة قرص. سيظهر رابط `https://….onrender.com` بعد نجاح البناء.
+4. يتولد `SECRET_KEY` تلقائياً، وتكون `COOKIE_SECURE=1` مضبوطة في الملف. تستخدم قاعدة البيانات المسار الافتراضي المؤقت.
 5. أضف إعدادات البريد وواتساب من `.env.example` في **Environment** عند توفرها.
    حساب الإدارة يحتاج `FAJWA_ADMIN_PASSWORD_HASH` بالصيغة التي يستخدمها `verify_password`؛ دونها يبقى تسجيل دخول الإدارة غير مفعّل.
 
 يمكن إنشاء Web Service يدوياً بدلاً من Blueprint بالقيم التالية:
 
 ```text
-Build Command: pip install -r requirements.txt
+Build Command: python -m zipfile -e fajwadev_Render_Ready.zip . && pip install -r requirements.txt
 Start Command: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
 Health Check Path: /healthz
-Persistent Disk Mount Path: /var/data
-FAJWA_DB_PATH: /var/data/fajwa.db
+Plan: Free ($0/month)
 ```
 
 أضف `SECRET_KEY` عشوائياً وثابتاً و`COOKIE_SECURE=1` في إعدادات الخدمة اليدوية.
